@@ -10,12 +10,16 @@ export class Gallery extends Component {
   state = {
     querry: "",
     page: 1,
+    img : []
   }
 
 
-  componentDidMount() {
-    this.getImagesGallery('cat', 1)
-  }
+  componentDidUpdate(_, prevState) {
+    const {querry, page} = this.state
+    if (prevState.querry !== querry || prevState.page !== page) {
+    this.getImagesGallery(querry, page)
+   }
+ }
   
 
 
@@ -30,13 +34,17 @@ this.setState({querry: value})
 
   getImagesGallery = async(querry,page) => {
     const images = await ImageService.getImages(querry,page);
-  console.log(images);
+    console.log(images);
+    this.setState({img: images.photos})
   }
 
   render() {
     return (
       <>
         <SearchForm handleForm={this.handleForm} />
+        <Grid>
+          {this.state.img.map(item =><GridItem key={item.id}><CardItem color={item.avg_color}><img src={item.src.large} alt={item.alt} /></CardItem></GridItem>)}
+        </Grid>
         <Text textAlign="center">Sorry. There are no images ... 😭</Text>
       </>
     );
